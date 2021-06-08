@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-tw">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <title>Index</title>
+    <script>
+        function auto(textarea) {
+            var adjustedHeight = textarea.clientHeight;
+
+            adjustedHeight = Math.max(textarea.scrollHeight, adjustedHeight);
+            if (adjustedHeight > textarea.clientHeight) {
+                textarea.style.height = adjustedHeight + 'px';
+            }
+
+        }
+    </script>
+</head>
+
+<body>
+
+    <script type="text/javascript">
+        function processImage() {
+            // **********************************************
+            // *** Update or verify the following values. ***
+            // **********************************************
+
+            let subscriptionKey = '873faf8b708848a4a37614072d280e1d';
+            let endpoint = 'https://qqvision.cognitiveservices.azure.com/customvision/v3.0/Prediction/43db0527-f867-48d1-932c-187d8137e418/classify/iterations/Animal/url';
+            if (!subscriptionKey) {
+                throw new Error('Set your environment variables for your subscription key and endpoint.');
+            }
+
+            // Display the image.
+            var sourceImageUrl = document.getElementById("inputImage").value;
+            document.querySelector("#sourceImage").src = sourceImageUrl;
+
+            // Make the REST API call.
+            $.ajax({
+                url: endpoint + "?",
+
+                // Request headers.
+                beforeSend: function(xhrObj) {
+                    xhrObj.setRequestHeader("Content-Type", "application/json");
+                    xhrObj.setRequestHeader("Prediction-Key", subscriptionKey);
+                },
+
+                type: "POST",
+
+                // Request body.
+                data: '{"url": ' + '"' + sourceImageUrl + '"}',
+            })
+
+            .done(function(data) {
+                // Show formatted JSON on webpage.
+                $("#responseTextArea").val(JSON.stringify(data, null, 2));
+            })
+
+            .fail(function(jqXHR, textStatus, errorThrown) {
+                // Display error message.
+                var errorString = (errorThrown === "") ? "Error. " :
+                    errorThrown + " (" + jqXHR.status + "): ";
+                errorString += (jqXHR.responseText === "") ? "" :
+                    jQuery.parseJSON(jqXHR.responseText).message;
+                alert(errorString);
+            });
+        };
+    </script>
+    <h2 class="title">S1310831016 FinalTest</h2>
+
+    <header>
+        <h2>─── 分析圖像 ───</h2>
+        <br>
+        <input type="text" name="inputImage" id="inputImage" value="https://static.wikia.nocookie.net/cats/images/e/ef/African_lion_king-wide.jpg/revision/latest?cb=20131126052253&path-prefix=en" />
+        <button onclick="processImage()">分析 Start !!</button>
+    </header>
+
+    <section>
+        <nav>
+            <div id="jsonOutput" style="width:40%;">
+                <p>Response:</p>
+                <br><br>
+                <textarea id="responseTextArea" class="UIInput"></textarea>
+            </div>
+        </nav>
+        <article>
+            <div id="imageDiv" style="width:420px; display:table-cell;">
+                <p>Source image:</p>
+                <br><br>
+                <img id="sourceImage" />
+            </div>
+        </article>
+    </section>
+
+
+    <footer>
+        <h2>Made By National Taichung University’ｓ Science and Technology of Management Information System student.</h2>
+        <h2>s1310831016@nutc.edu.tw　　　TW_nutc©</h2>
+    </footer>
+
+</body>
+
+</html>
